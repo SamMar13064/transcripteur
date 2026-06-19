@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Transcripteur</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface2: #222;
+    --border: rgba(255,255,255,0.08);
+    --text: #e8e8e6;
+    --muted: #888;
+    --accent: #4f98a3;
+    --accent-hover: #3a7f8a;
+    --error: #d16374;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-6: 1.5rem;
+    --space-8: 2rem;
+    --radius: 0.75rem;
+    --radius-sm: 0.375rem;
+  }
+  html, body { min-height: 100dvh; font-family: -apple-system, 'Helvetica Neue', sans-serif; background: var(--bg); color: var(--text); }
+  body { display: flex; flex-direction: column; align-items: center; padding: var(--space-6) var(--space-4); gap: var(--space-6); }
+
+  header { width: 100%; max-width: 640px; display: flex; align-items: center; justify-content: space-between; }
+  h1 { font-size: 1.25rem; font-weight: 600; letter-spacing: -0.01em; }
+  .badge { font-size: 0.7rem; background: var(--accent); color: #fff; padding: 2px 8px; border-radius: 99px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  .card { width: 100%; max-width: 640px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-4); }
+
+  .status-row { display: flex; align-items: center; gap: var(--space-3); }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--muted); flex-shrink: 0; transition: background 0.3s; }
+  .dot.listening { background: #e05555; animation: pulse 1.2s infinite; }
+  .dot.ready { background: #6daa45; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .status-text { font-size: 0.875rem; color: var(--muted); }
+
+  .btn-row { display: flex; gap: var(--space-3); flex-wrap: wrap; }
+  button { padding: 0.65rem 1.2rem; border-radius: var(--radius-sm); border: none; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: background 0.18s, transform 0.1s; -webkit-tap-highlight-color: transparent; }
+  button:active { transform: scale(0.97); }
+  #btnStart { background: var(--accent); color: #fff; }
+  #btnStart:hover { background: var(--accent-hover); }
+  #btnStart:disabled { background: #2a4a4e; color: #4a7a80; cursor: not-allowed; }
+  #btnStop { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  #btnStop:disabled { opacity: 0.4; cursor: not-allowed; }
+  #btnCopy { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  #btnClear { background: transparent; color: var(--error); border: 1px solid rgba(209,99,116,0.3); }
+
+  textarea { width: 100%; min-height: 260px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-size: 0.9375rem; line-height: 1.6; padding: var(--space-4); resize: vertical; font-family: inherit; }
+  textarea::placeholder { color: var(--muted); }
+  textarea:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .hint { font-size: 0.8rem; color: var(--muted); line-height: 1.5; padding: var(--space-3); background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); border-left: 2px solid var(--accent); }
+
+  .error-msg { font-size: 0.85rem; color: var(--error); padding: var(--space-3); background: rgba(209,99,116,0.08); border-radius: var(--radius-sm); display: none; }
+  .error-msg.show { display: block; }
+
+  .counter { font-size: 0.75rem; color: var(--muted); text-align: right; }
+
+  @media (max-width: 400px) {
+    .btn-row { flex-direction: column; }
+    button { width: 100%; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🎙 Transcripteur</h1>
+  <span class="badge">Gratuit</span>
+</header>
+
+<div class="card">
+  <div class="status-row">
+    <div class="dot" id="dot"></div>
+    <span class="status-text" id="statusText">Prêt — appuie sur Démarrer</span>
+  </div>
+
+  <div class="btn-row">
+    <button id="btnStart">▶ Démarrer</button>
+    <button id="btnStop" disabled>⏹ Arrêter</button>
+    <button id="btnCopy">📋 Copier</button>
+    <button id="btnClear">🗑 Effacer</button>
+  </div>
+
+  <textarea id="output" placeholder="La transcription apparaîtra ici en temps réel…" readonly></textarea>
+  <div class="counter" id="counter">0 mots</div>
+
+  <div class="error-msg" id="errorMsg"></div>
+
+  <div class="hint">
+    💡 <strong>Comment faire :</strong> Lance la transcription, puis joue ta vidéo TikTok avec le son. Le texte s'écrit automatiquement. Appuie sur Copier pour tout coller ailleurs.
+  </div>
+</div>
+
+<script>
+  const btnStart = document.getElementById('btnStart');
+  const btnStop = document.getElementById('btnStop');
+  const btnCopy = document.getElementById('btnCopy');
+  const btnClear = document.getElementById('btnClear');
+  const output = document.getElementById('output');
+  const dot = document.getElementById('dot');
+  const statusText = document.getElementById('statusText');
+  const errorMsg = document.getElementById('errorMsg');
+  const counter = document.getElementById('counter');
+
+  let recognition = null;
+  let fullText = '';
+  let listening = false;
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  function showError(msg) {
+    errorMsg.textContent = msg;
+    errorMsg.classList.add('show');
+  }
+  function hideError() {
+    errorMsg.classList.remove('show');
+  }
+  function updateCounter() {
+    const words = fullText.trim() === '' ? 0 : fullText.trim().split(/\s+/).length;
+    counter.textContent = words + ' mot' + (words > 1 ? 's' : '');
+  }
+  function setStatus(state) {
+    if (state === 'listening') {
+      dot.className = 'dot listening';
+      statusText.textContent = 'Écoute en cours…';
+    } else if (state === 'ready') {
+      dot.className = 'dot ready';
+      statusText.textContent = 'Arrêté — transcription disponible';
+    } else {
+      dot.className = 'dot';
+      statusText.textContent = 'Prêt — appuie sur Démarrer';
+    }
+  }
+
+  if (!SpeechRecognition) {
+    showError('⚠️ Ton navigateur ne supporte pas la reconnaissance vocale. Utilise Safari sur iPhone ou Chrome sur Android.');
+    btnStart.disabled = true;
+  } else {
+    recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'fr-FR';
+
+    recognition.onstart = () => {
+      listening = true;
+      setStatus('listening');
+      btnStart.disabled = true;
+      btnStop.disabled = false;
+      hideError();
+    };
+
+    recognition.onresult = (e) => {
+      let interim = '';
+      let finalSegment = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        if (e.results[i].isFinal) {
+          finalSegment += e.results[i][0].transcript + ' ';
+        } else {
+          interim += e.results[i][0].transcript;
+        }
+      }
+      if (finalSegment) {
+        fullText += finalSegment;
+        updateCounter();
+      }
+      output.value = fullText + (interim ? '…' + interim : '');
+      output.scrollTop = output.scrollHeight;
+    };
+
+    recognition.onerror = (e) => {
+      if (e.error === 'not-allowed') {
+        showError('❌ Accès au micro refusé. Autorise le micro dans les réglages de Safari.');
+      } else if (e.error === 'no-speech') {
+        // silence normale, on relance
+      } else {
+        showError('Erreur : ' + e.error);
+      }
+    };
+
+    recognition.onend = () => {
+      if (listening) {
+        // relance automatique pour ne pas s'arrêter
+        try { recognition.start(); } catch(e) {}
+      } else {
+        setStatus(fullText.trim() ? 'ready' : 'idle');
+        btnStart.disabled = false;
+        btnStop.disabled = true;
+      }
+    };
+  }
+
+  btnStart.addEventListener('click', () => {
+    if (!recognition) return;
+    fullText = '';
+    output.value = '';
+    updateCounter();
+    listening = true;
+    try { recognition.start(); } catch(e) {}
+  });
+
+  btnStop.addEventListener('click', () => {
+    listening = false;
+    if (recognition) recognition.stop();
+  });
+
+  btnCopy.addEventListener('click', () => {
+    const text = fullText.trim() || output.value;
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+      btnCopy.textContent = '✅ Copié !';
+      setTimeout(() => btnCopy.textContent = '📋 Copier', 2000);
+    }).catch(() => {
+      output.select();
+      document.execCommand('copy');
+      btnCopy.textContent = '✅ Copié !';
+      setTimeout(() => btnCopy.textContent = '📋 Copier', 2000);
+    });
+  });
+
+  btnClear.addEventListener('click', () => {
+    fullText = '';
+    output.value = '';
+    updateCounter();
+    setStatus('idle');
+    hideError();
+  });
+</script>
+</body>
+</html>
