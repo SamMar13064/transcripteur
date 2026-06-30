@@ -15,60 +15,44 @@
     --muted: #888;
     --accent: #4f98a3;
     --accent-hover: #3a7f8a;
-    --accent2: #7a5fa3;
-    --accent2-hover: #634d87;
     --error: #d16374;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-6: 1.5rem;
+    --space-8: 2rem;
     --radius: 0.75rem;
     --radius-sm: 0.375rem;
   }
   html, body { min-height: 100dvh; font-family: -apple-system, 'Helvetica Neue', sans-serif; background: var(--bg); color: var(--text); }
-  body { display: flex; flex-direction: column; align-items: center; padding: 1.5rem 1rem; gap: 1.5rem; }
-
+  body { display: flex; flex-direction: column; align-items: center; padding: var(--space-6) var(--space-4); gap: var(--space-6); }
   header { width: 100%; max-width: 640px; display: flex; align-items: center; justify-content: space-between; }
   h1 { font-size: 1.25rem; font-weight: 600; letter-spacing: -0.01em; }
   .badge { font-size: 0.7rem; background: var(--accent); color: #fff; padding: 2px 8px; border-radius: 99px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
-
-  .card { width: 100%; max-width: 640px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
-
-  .mode-selector { display: flex; gap: 0.5rem; background: var(--surface2); border-radius: var(--radius-sm); padding: 4px; }
-  .mode-btn { flex: 1; padding: 0.55rem 0.75rem; border-radius: calc(var(--radius-sm) - 2px); border: none; background: transparent; color: var(--muted); font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s; text-align: center; }
-  .mode-btn.active { background: var(--accent); color: #fff; }
-  .mode-btn.active.speaker { background: var(--accent2); }
-  .mode-btn:hover:not(.active) { color: var(--text); background: rgba(255,255,255,0.05); }
-
-  .status-row { display: flex; align-items: center; gap: 0.75rem; }
+  .card { width: 100%; max-width: 640px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-4); }
+  .status-row { display: flex; align-items: center; gap: var(--space-3); }
   .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--muted); flex-shrink: 0; transition: background 0.3s; }
   .dot.listening { background: #e05555; animation: pulse 1.2s infinite; }
   .dot.ready { background: #6daa45; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
   .status-text { font-size: 0.875rem; color: var(--muted); }
-
-  .btn-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+  .btn-row { display: flex; gap: var(--space-3); flex-wrap: wrap; }
   button { padding: 0.65rem 1.2rem; border-radius: var(--radius-sm); border: none; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: background 0.18s, transform 0.1s; -webkit-tap-highlight-color: transparent; }
   button:active { transform: scale(0.97); }
   #btnStart { background: var(--accent); color: #fff; }
-  #btnStart:hover:not(:disabled) { background: var(--accent-hover); }
+  #btnStart:hover { background: var(--accent-hover); }
   #btnStart:disabled { background: #2a4a4e; color: #4a7a80; cursor: not-allowed; }
-  #btnStart.speaker-mode { background: var(--accent2); }
-  #btnStart.speaker-mode:hover:not(:disabled) { background: var(--accent2-hover); }
   #btnStop { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
   #btnStop:disabled { opacity: 0.4; cursor: not-allowed; }
   #btnCopy { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
   #btnClear { background: transparent; color: var(--error); border: 1px solid rgba(209,99,116,0.3); }
-
-  textarea { width: 100%; min-height: 260px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-size: 0.9375rem; line-height: 1.6; padding: 1rem; resize: vertical; font-family: inherit; }
+  textarea { width: 100%; min-height: 260px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-size: 0.9375rem; line-height: 1.6; padding: var(--space-4); resize: vertical; font-family: inherit; }
   textarea::placeholder { color: var(--muted); }
   textarea:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
-
-  .hint { font-size: 0.8rem; color: var(--muted); line-height: 1.5; padding: 0.75rem; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); border-left: 2px solid var(--accent); }
-  .hint.speaker { border-left-color: var(--accent2); }
-  .hint strong { color: var(--text); }
-
-  .error-msg { font-size: 0.85rem; color: var(--error); padding: 0.75rem; background: rgba(209,99,116,0.08); border-radius: var(--radius-sm); display: none; }
+  .hint { font-size: 0.8rem; color: var(--muted); line-height: 1.5; padding: var(--space-3); background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); border-left: 2px solid var(--accent); }
+  .error-msg { font-size: 0.85rem; color: var(--error); padding: var(--space-3); background: rgba(209,99,116,0.08); border-radius: var(--radius-sm); display: none; }
   .error-msg.show { display: block; }
-
   .counter { font-size: 0.75rem; color: var(--muted); text-align: right; }
-
   @media (max-width: 400px) {
     .btn-row { flex-direction: column; }
     button { width: 100%; text-align: center; }
@@ -76,130 +60,84 @@
 </style>
 </head>
 <body>
-
 <header>
   <h1>🎙 Transcripteur</h1>
   <span class="badge">Gratuit</span>
 </header>
-
 <div class="card">
-  <div class="mode-selector">
-    <button class="mode-btn active" id="modeMic" onclick="setMode('mic')">🎤 Microphone</button>
-    <button class="mode-btn speaker" id="modeSpeaker" onclick="setMode('speaker')">🔊 Vidéo / Haut-parleur</button>
-  </div>
-
   <div class="status-row">
     <div class="dot" id="dot"></div>
-    <span class="status-text" id="statusText">Prêt — choisis un mode et appuie sur Démarrer</span>
+    <span class="status-text" id="statusText">Prêt — appuie sur Démarrer</span>
   </div>
-
   <div class="btn-row">
     <button id="btnStart">▶ Démarrer</button>
     <button id="btnStop" disabled>⏹ Arrêter</button>
     <button id="btnCopy">📋 Copier</button>
     <button id="btnClear">🗑 Effacer</button>
   </div>
-
   <textarea id="output" placeholder="La transcription apparaîtra ici en temps réel…" readonly></textarea>
   <div class="counter" id="counter">0 mots</div>
   <div class="error-msg" id="errorMsg"></div>
-  <div class="hint" id="hintBox">
-    💡 <strong>Mode Micro :</strong> Parle normalement, le texte s'écrit en temps réel.
+  <div class="hint">
+    💡 <strong>Comment faire :</strong> Lance la transcription, puis joue ta vidéo avec le son. Le texte s'écrit automatiquement. Appuie sur Copier pour tout coller ailleurs.
   </div>
 </div>
-
 <script>
-  const btnStart   = document.getElementById('btnStart');
-  const btnStop    = document.getElementById('btnStop');
-  const btnCopy    = document.getElementById('btnCopy');
-  const btnClear   = document.getElementById('btnClear');
-  const output     = document.getElementById('output');
-  const dot        = document.getElementById('dot');
+  const btnStart = document.getElementById('btnStart');
+  const btnStop = document.getElementById('btnStop');
+  const btnCopy = document.getElementById('btnCopy');
+  const btnClear = document.getElementById('btnClear');
+  const output = document.getElementById('output');
+  const dot = document.getElementById('dot');
   const statusText = document.getElementById('statusText');
-  const errorMsg   = document.getElementById('errorMsg');
-  const counter    = document.getElementById('counter');
-  const hintBox    = document.getElementById('hintBox');
-  const modeMicBtn = document.getElementById('modeMic');
-  const modeSpeakerBtn = document.getElementById('modeSpeaker');
+  const errorMsg = document.getElementById('errorMsg');
+  const counter = document.getElementById('counter');
 
-  let recognition   = null;
-  let fullText      = '';
-  let listening     = false;
-  let currentMode   = 'mic';
-  let speakerStream = null;
-  let audioContext  = null;
+  let recognition = null;
+  let fullText = '';
+  let listening = false;
 
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
   function showError(msg) { errorMsg.textContent = msg; errorMsg.classList.add('show'); }
-  function hideError()    { errorMsg.classList.remove('show'); }
-
+  function hideError() { errorMsg.classList.remove('show'); }
   function updateCounter() {
     const words = fullText.trim() === '' ? 0 : fullText.trim().split(/\s+/).length;
     counter.textContent = words + ' mot' + (words > 1 ? 's' : '');
   }
-
   function setStatus(state) {
     if (state === 'listening') {
       dot.className = 'dot listening';
-      statusText.textContent = currentMode === 'speaker' ? 'Capture haut-parleur en cours…' : 'Écoute micro en cours…';
+      statusText.textContent = 'Écoute en cours…';
     } else if (state === 'ready') {
       dot.className = 'dot ready';
       statusText.textContent = 'Arrêté — transcription disponible';
     } else {
       dot.className = 'dot';
-      statusText.textContent = 'Prêt — choisis un mode et appuie sur Démarrer';
+      statusText.textContent = 'Prêt — appuie sur Démarrer';
     }
   }
 
-  function setMode(mode) {
-    if (listening) return;
-    currentMode = mode;
-    if (mode === 'mic') {
-      modeMicBtn.classList.add('active');
-      modeSpeakerBtn.classList.remove('active');
-      btnStart.classList.remove('speaker-mode');
-      hintBox.className = 'hint';
-      hintBox.innerHTML = '💡 <strong>Mode Micro :</strong> Parle normalement, le texte s\'écrit en temps réel.';
-    } else {
-      modeSpeakerBtn.classList.add('active');
-      modeMicBtn.classList.remove('active');
-      btnStart.classList.add('speaker-mode');
-      hintBox.className = 'hint speaker';
-      hintBox.innerHTML = '💡 <strong>Mode Vidéo / Haut-parleur :</strong> Clique Démarrer → Chrome te demande de <strong>partager un onglet ou l\'écran</strong> → coche <strong>"Partager l\'audio"</strong> → lance ta vidéo. Le son sera transcrit automatiquement.';
-    }
-  }
+  if (!SpeechRecognition) {
+    showError('⚠️ Ton navigateur ne supporte pas la reconnaissance vocale. Utilise Safari sur iPhone ou Chrome sur Android.');
+    btnStart.disabled = true;
+  } else {
+    recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'fr-FR';
 
-  function buildRecognition(stream) {
-    if (!SpeechRecognition) {
-      showError('⚠️ Ton navigateur ne supporte pas la reconnaissance vocale. Utilise Chrome sur ordinateur.');
-      btnStart.disabled = true;
-      return null;
-    }
-    const rec = new SpeechRecognition();
-    rec.continuous     = true;
-    rec.interimResults = true;
-    rec.lang           = 'fr-FR';
-
-    if (stream) {
-      try {
-        audioContext = new AudioContext();
-        const src  = audioContext.createMediaStreamSource(stream);
-        const dest = audioContext.createMediaStreamDestination();
-        src.connect(dest);
-      } catch(e) { console.warn('AudioContext:', e); }
-    }
-
-    rec.onstart = () => {
+    recognition.onstart = () => {
       listening = true;
       setStatus('listening');
       btnStart.disabled = true;
-      btnStop.disabled  = false;
+      btnStop.disabled = false;
       hideError();
     };
 
-    rec.onresult = (e) => {
-      let interim = '', finalSegment = '';
+    recognition.onresult = (e) => {
+      let interim = '';
+      let finalSegment = '';
       for (let i = e.resultIndex; i < e.results.length; i++) {
         if (e.results[i].isFinal) finalSegment += e.results[i][0].transcript + ' ';
         else interim += e.results[i][0].transcript;
@@ -209,62 +147,57 @@
       output.scrollTop = output.scrollHeight;
     };
 
-    rec.onerror = (e) => {
+    recognition.onerror = (e) => {
       if (e.error === 'not-allowed' || e.error === 'audio-capture') {
-        showError('❌ Accès refusé. Autorise le micro/partage dans les paramètres du navigateur.');
-        stopAll();
+        showError('❌ Accès au micro refusé ou impossible à trouver.');
+        listening = false;
+      } else if (e.error === 'no-speech' || e.error === 'network') {
+        // ignoré
+      } else {
+        console.log('Erreur : ' + e.error);
       }
     };
 
-    rec.onend = () => {
+    recognition.onend = () => {
       if (listening) {
-        setTimeout(() => { try { if (listening) rec.start(); } catch(e){} }, 400);
+        setTimeout(() => { try { if(listening) recognition.start(); } catch(e){} }, 400);
       } else {
         setStatus(fullText.trim() ? 'ready' : 'idle');
         btnStart.disabled = false;
-        btnStop.disabled  = true;
+        btnStop.disabled = true;
       }
     };
-    return rec;
   }
 
-  btnStart.addEventListener('click', async () => {
-    fullText = ''; output.value = ''; updateCounter(); hideError();
-
-    if (currentMode === 'speaker') {
-      if (!navigator.mediaDevices?.getDisplayMedia) {
-        showError('❌ Utilise Chrome 74+ sur ordinateur.');
-        return;
-      }
-      try {
-        speakerStream = await navigator.mediaDevices.getDisplayMedia({
-          video: true,
-          audio: { echoCancellation: false, noiseSuppression: false, sampleRate: 44100 }
-        });
-        const audioTracks = speakerStream.getAudioTracks();
-        if (audioTracks.length === 0) {
-          speakerStream.getTracks().forEach(t => t.stop());
-          showError('⚠️ Aucune piste audio. Dans Chrome, coche "Partager l\'audio de l\'onglet" avant de valider.');
-          return;
-        }
-        recognition = buildRecognition(new MediaStream(audioTracks));
-        if (!recognition) return;
-        speakerStream.getVideoTracks()[0]?.addEventListener('ended', stopAll);
-        audioTracks[0]?.addEventListener('ended', stopAll);
-        listening = true;
-        try { recognition.start(); } catch(e) {}
-      } catch(err) {
-        showError(err.name === 'NotAllowedError' ? '❌ Partage annulé.' : '❌ Erreur : ' + err.message);
-      }
-    } else {
-      recognition = buildRecognition(null);
-      if (!recognition) return;
-      listening = true;
-      try { recognition.start(); } catch(e) {}
-    }
+  btnStart.addEventListener('click', () => {
+    if (!recognition) return;
+    fullText = ''; output.value = ''; updateCounter();
+    listening = true;
+    try { recognition.start(); } catch(e) {}
   });
 
-  function stopAll() {
+  btnStop.addEventListener('click', () => {
     listening = false;
-    if (recognition)   { try { recognition.stop(); } catch(e){} }
-    if (speakerStream) {
+    if (recognition) recognition.stop();
+  });
+
+  btnCopy.addEventListener('click', () => {
+    const text = fullText.trim() || output.value;
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+      btnCopy.textContent = '✅ Copié !';
+      setTimeout(() => btnCopy.textContent = '📋 Copier', 2000);
+    }).catch(() => {
+      output.select();
+      document.execCommand('copy');
+      btnCopy.textContent = '✅ Copié !';
+      setTimeout(() => btnCopy.textContent = '📋 Copier', 2000);
+    });
+  });
+
+  btnClear.addEventListener('click', () => {
+    fullText = ''; output.value = ''; updateCounter(); setStatus('idle'); hideError();
+  });
+</script>
+</body>
+</html>
