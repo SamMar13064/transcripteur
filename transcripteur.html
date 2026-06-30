@@ -94,7 +94,7 @@
   <div class="error-msg" id="errorMsg"></div>
 
   <div class="hint">
-    💡 <strong>Comment faire :</strong> Lance la transcription, puis joue ta vidéo TikTok avec le son. Le texte s'écrit automatiquement. Appuie sur Copier pour tout coller ailleurs.
+    💡 <strong>Comment faire :</strong> Lance la transcription, puis joue ta vidéo avec le son. Le texte s'écrit automatiquement. Appuie sur Copier pour tout coller ailleurs.
   </div>
 </div>
 
@@ -175,19 +175,24 @@
     };
 
     recognition.onerror = (e) => {
-      if (e.error === 'not-allowed') {
-        showError('❌ Accès au micro refusé. Autorise le micro dans les réglages de Safari.');
-      } else if (e.error === 'no-speech') {
-        // silence normale, on relance
+      if (e.error === 'not-allowed' || e.error === 'audio-capture') {
+        showError('❌ Accès au micro refusé ou impossible à trouver.');
+        listening = false;
+      } else if (e.error === 'no-speech' || e.error === 'network') {
+        // Ignoré silencieusement pour laisser la boucle onend faire son travail de relance
       } else {
-        showError('Erreur : ' + e.error);
+        console.log('Erreur ignorée pour maintenir l\'écoute : ' + e.error);
       }
     };
 
     recognition.onend = () => {
       if (listening) {
-        // relance automatique pour ne pas s'arrêter
-        try { recognition.start(); } catch(e) {}
+        // Micro-pause de 400ms obligatoire pour empêcher Chrome de bloquer la relance en continu
+        setTimeout(() => {
+          try { 
+            if(listening) recognition.start(); 
+          } catch(e) {}
+        }, 400);
       } else {
         setStatus(fullText.trim() ? 'ready' : 'idle');
         btnStart.disabled = false;
